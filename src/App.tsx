@@ -1,106 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, InputAdornment, TextField } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import "./App.css";
 
-const results = {
-  results: [
-    {
-      country: "GB",
-      city: "Aberdeen",
-      count: 621734,
-      locations: 3,
-      firstUpdated: "2016-02-27T20:00:00+00:00",
-      lastUpdated: "2022-09-21T05:00:00+00:00",
-      parameters: ["no2", "o3", "pm10", "pm25"],
-    },
-    {
-      country: "GB",
-      city: "Adur",
-      count: 29061,
-      locations: 1,
-      firstUpdated: "2021-04-29T00:00:00+00:00",
-      lastUpdated: "2022-01-31T14:00:00+00:00",
-      parameters: ["no2", "pm10", "pm25"],
-    },
-    {
-      country: "GB",
-      city: "Armagh",
-      count: 234378,
-      locations: 1,
-      firstUpdated: "2016-02-27T21:00:00+00:00",
-      lastUpdated: "2022-09-21T05:00:00+00:00",
-      parameters: ["no2", "pm10"],
-    },
-    {
-      country: "GB",
-      city: "Aston Hill",
-      count: 239035,
-      locations: 1,
-      firstUpdated: "2016-02-27T21:00:00+00:00",
-      lastUpdated: "2022-09-21T05:00:00+00:00",
-      parameters: ["no2", "o3"],
-    },
-    {
-      country: "GB",
-      city: "Auchencorth",
-      count: 365517,
-      locations: 1,
-      firstUpdated: "2016-02-27T21:00:00+00:00",
-      lastUpdated: "2022-09-21T05:00:00+00:00",
-      parameters: ["o3", "pm10", "pm25"],
-    },
-    {
-      country: "GB",
-      city: "Ballymena",
-      count: 193033,
-      locations: 1,
-      firstUpdated: "2016-02-27T21:00:00+00:00",
-      lastUpdated: "2022-09-21T04:00:00+00:00",
-      parameters: ["no2", "so2"],
-    },
-    {
-      country: "GB",
-      city: "Barking and Dagenham",
-      count: 115662,
-      locations: 2,
-      firstUpdated: "2021-04-29T00:00:00+00:00",
-      lastUpdated: "2022-09-21T04:00:00+00:00",
-      parameters: ["no2", "pm10", "so2"],
-    },
-    {
-      country: "GB",
-      city: "Barnsley",
-      count: 362444,
-      locations: 1,
-      firstUpdated: "2016-02-27T21:00:00+00:00",
-      lastUpdated: "2022-09-21T05:00:00+00:00",
-      parameters: ["no2", "o3", "so2"],
-    },
-  ],
-};
-
 function App() {
-  const [currentCities, setCurrentCities] = useState([]);
-  const [selectedCity, setSeletedCity] = useState("");
+  const [currentCities, setCurrentCities] = useState<string[]>([]);
+  const [selectedCity, setSeletedCity] = useState<string>("");
+
+  useEffect(() => {
+    getCities();
+  }, []);
+
+  const getCities = async () => {
+    try {
+      const response = await fetch(
+        "https://api.openaq.org/v1/cities?country=GB&limit=157"
+      );
+      const data = await response.json();
+      console.log(data.results);
+      setCurrentCities(data.results.map((x: any) => x.name));
+    } catch (error) {
+      console.log(error);
+      //TODO handle error gracefully
+    }
+  };
 
   return (
     <div className="App">
+      <h1>Compare your air</h1>
+      <h2>Compare the air quality between cities in the UK.</h2>
+      <h2>Select cities to compare using the search tool below.</h2>
       <Autocomplete
+        className="searchBox"
         freeSolo
-        id="free-solo-2-demo"
         disableClearable
-        options={results.results.map((option) => option.city)}
+        options={currentCities.map((option) => option)}
+        onChange={(event: any, newValue: string) => {
+          setSeletedCity(newValue);
+        }}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search input"
+            placeholder="Enter city name..."
             InputProps={{
               ...params.InputProps,
               type: "search",
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
             }}
           />
         )}
       />
+      {selectedCity}
     </div>
   );
 }
