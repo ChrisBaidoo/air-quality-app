@@ -1,60 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, InputAdornment, TextField } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+
 import "./App.css";
+import Search from "./Components/Search";
+import SearchResult from "./Components/SearchResult";
+import Header from "./Components/Header";
+import { City } from "./Types/CityType";
+import { fetchAndUpdateState } from "./helpers/FetchData";
 
 function App() {
   const [currentCities, setCurrentCities] = useState<string[]>([]);
-  const [selectedCity, setSeletedCity] = useState<string>("");
+  const [selectedCities, setSeletedCities] = useState<City[] | undefined>([]);
 
   useEffect(() => {
     getCities();
   }, []);
 
-  const getCities = async () => {
-    try {
-      const response = await fetch(
-        "https://api.openaq.org/v1/cities?country=GB&limit=157"
-      );
-      const data = await response.json();
-      console.log(data.results);
-      setCurrentCities(data.results.map((x: any) => x.name));
-    } catch (error) {
-      console.log(error);
-      //TODO handle error gracefully
-    }
+  const getCities = async () =>
+    fetchAndUpdateState(
+      "https://api.openaq.org/v1/cities?country=GB&limit=157",
+      handleCitiesUpdate
+    );
+
+  const handleCitiesUpdate = (response: any) => {
+    setCurrentCities(response.map((x: any) => x.name));
   };
+
+  const getSelectedCity = async (event: any, value: string) =>
+    fetchAndUpdateState(
+      `https://api.openaq.org/v1/latest?country=GB&city=${value}`,
+      compareResults
+    );
+
+  const compareResults = (results: City[]): void => {
+    let cities = selectedCities ? selectedCities : ([] as City[]);
+
+    results.forEach((item: City) => {
+      const found = cities?.some((obj) => obj.location === item.location);
+      if (!found) {
+        cities?.unshift(item);
+      }
+    });
+    setSeletedCities([...cities]);
+  };
+
+  const removeCard = (location: string) => {
+    const cities = selectedCities?.filter((item) => item.location !== location);
+    setSeletedCities(cities);
+  };
+
+  const handleClose = (location: any) => removeCard(location);
 
   return (
     <div className="App">
-      <h1>Compare your air</h1>
-      <h2>Compare the air quality between cities in the UK.</h2>
-      <h2>Select cities to compare using the search tool below.</h2>
-      <Autocomplete
-        className="searchBox"
-        freeSolo
-        disableClearable
-        options={currentCities.map((option) => option)}
-        onChange={(event: any, newValue: string) => {
-          setSeletedCity(newValue);
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder="Enter city name..."
-            InputProps={{
-              ...params.InputProps,
-              type: "search",
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        )}
-      />
-      {selectedCity}
+      <Header />
+      <Search currentCities={currentCities} getSelectedCity={getSelectedCity} />
+      {selectedCities && (
+        <SearchResult
+          selectedCities={selectedCities}
+          handleClose={handleClose}
+        />
+      )}
     </div>
   );
 }
