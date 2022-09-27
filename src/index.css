@@ -10,30 +10,3 @@ body {
     rgba(121, 55, 177, 1) 0%,
     rgba(63, 122, 174, 1) 100%);
 }
-
-.searchBox{
-  display: flex;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 40px;
-  background-color: #f3f3f3;
-  border-radius: 6px;
-}
-
- h1,
- h2 {
-  color: #f3f3f3;
-  text-align: center;
- }
-
- h1 {
-  font-size: 3.8rem;
-  font-weight: 700;
- }
-
- h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0.5rem auto;
-  width: 80%;
- }

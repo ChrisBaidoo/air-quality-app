@@ -5,9 +5,9 @@ export const readableDateTime = (date: string) => {
 
   const hour = 1000 * 60 * 60;
   const toHours = Math.round(dateDifference / hour);
-
   const oneDay = 1000 * 60 * 60 * 24;
   const toDays = Math.round(dateDifference / oneDay);
+
   let readableFormat;
 
   if (toDays < 1) {

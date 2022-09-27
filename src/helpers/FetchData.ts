@@ -1,15 +1,4 @@
-export const fetchData = async (url: string): Promise<any> => {
-  let response = null;
-  try {
-    const data = await fetch(url);
-    let jsonData = await data.json();
-    response = jsonData.results;
-  } catch (error) {
-    console.log(error);
-    //TODO: handle error gracefully
-  }
-  return response;
-};
+import { Result, RequestState } from "./RequestState";
 
 export const fetchAndUpdateState = async (
   url: string,
@@ -19,4 +8,27 @@ export const fetchAndUpdateState = async (
   if (callback) {
     callback(response);
   }
+};
+
+export const fetchData = async (url: string): Promise<any> => {
+  let response: Result = {
+    response: null,
+    state: RequestState.LOADING,
+  };
+
+  try {
+    const data = await fetch(url);
+    let jsonData = await data.json();
+    response = jsonData.results;
+    response = {
+      response,
+      state: RequestState.SUCCESS,
+    };
+  } catch (error) {
+    response = {
+      response: error,
+      state: RequestState.FAILED,
+    };
+  }
+  return response;
 };

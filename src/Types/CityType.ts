@@ -13,3 +13,7 @@ export interface City {
     }
   ];
 }
+
+export interface CityName {
+  name: string;
+}
