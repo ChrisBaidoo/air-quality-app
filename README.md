@@ -1,4 +1,4 @@
-## Shopping Cart
+## Air Quality App
 
 An app to compare air quality across cities in the UK
 
