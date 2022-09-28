@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/airQuality/static/css/main.71cf7682.css",
+    "main.js": "/airQuality/static/js/main.f493658b.js",
+    "index.html": "/airQuality/index.html",
+    "main.71cf7682.css.map": "/airQuality/static/css/main.71cf7682.css.map",
+    "main.f493658b.js.map": "/airQuality/static/js/main.f493658b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.71cf7682.css",
+    "static/js/main.f493658b.js"
+  ]
+}
